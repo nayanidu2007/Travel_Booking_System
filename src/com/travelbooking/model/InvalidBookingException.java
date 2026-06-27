@@ -1,0 +1,8 @@
+package com.travelbooking.model;
+
+public class InvalidBookingException extends Exception {
+
+    public InvalidBookingException(String message) {
+        super(message);
+    }
+}

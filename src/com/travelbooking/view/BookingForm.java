@@ -13,6 +13,8 @@ import com.travelbooking.model.Destination;
 import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import com.travelbooking.model.InvalidBookingException;
+
 
 /**
  *
@@ -342,6 +344,18 @@ public class BookingForm extends javax.swing.JFrame {
         clearFields();
     }//GEN-LAST:event_jButton3ActionPerformed
 
+      private void validateBooking(String travelDate, int persons) throws InvalidBookingException {
+        if (travelDate.isEmpty()) {
+            throw new InvalidBookingException("Travel date cannot be empty!");
+        }
+        if (persons <= 0) {
+            throw new InvalidBookingException("Number of persons must be at least 1!");
+        }
+        if (persons > 20) {
+            throw new InvalidBookingException("Maximum 20 persons allowed per booking!");
+        }
+    }
+    
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
          int custIndex = jComboBox1.getSelectedIndex();
@@ -357,6 +371,11 @@ public class BookingForm extends javax.swing.JFrame {
         }
 
         try {
+            int persons = Integer.parseInt(jTextField2.getText());
+
+            // ⭐ custom exception validation
+            validateBooking(jTextField1.getText(), persons);
+
             Booking b = new Booking();
             b.setCustomerId(customerList.get(custIndex).getId());
             b.setDestinationId(destinationList.get(destIndex).getId());
@@ -366,7 +385,7 @@ public class BookingForm extends javax.swing.JFrame {
             b.setTravelDate(travelDate);
             b.setReturnDate(travelDate); // simple version - same as travel date
 
-            b.setNumPersons(Integer.parseInt(jTextField2.getText()));
+            b.setNumPersons(persons);
             b.setTotalPrice(Double.parseDouble(jTextField3.getText()));
             b.setStatus("Confirmed");
 
@@ -377,6 +396,8 @@ public class BookingForm extends javax.swing.JFrame {
             } else {
                 JOptionPane.showMessageDialog(this, "Failed to add booking!");
             }
+        } catch (InvalidBookingException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage());
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(this, "Date must be in format yyyy-mm-dd (e.g. 2026-07-15)");
         }
